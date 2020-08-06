@@ -81,7 +81,7 @@
 
 			local tbl = {"abc", "hello", "hi", "goodbye", "hello", "hey"}
 			local removed, atIndex = TableUtil.FastRemoveFirstValue(tbl, "hello")
-			if (removed) then
+			if removed then
 				print("Removed at index " .. atIndex)
 				print(table.concat(tbl, " "))  -- > abc hi goodbye hello hey
 			else
@@ -216,7 +216,7 @@ local function CopyTable(t)
 	assert(type(t) == "table", "First argument must be a table")
 	local tCopy = table.create(#t)
 	for k,v in pairs(t) do
-		if (type(v) == "table") then
+		if type(v) == "table" then
 			tCopy[k] = CopyTable(v)
 		else
 			tCopy[k] = v
@@ -228,7 +228,10 @@ end
 
 local function CopyTableShallow(t)
 	local tCopy = table.create(#t)
-	for k,v in pairs(t) do tCopy[k] = v end
+	for k,v in pairs(t) do
+		tCopy[k] = v
+	end
+
 	return tCopy
 end
 
@@ -246,19 +249,19 @@ local function Sync(tbl, templateTbl)
 		local vTemplate = templateTbl[k]
 		
 		-- Remove keys not within template:
-		if (vTemplate == nil) then
+		if vTemplate == nil then
 			tbl[k] = nil
 			
 		-- Synchronize data types:
-		elseif (type(v) ~= type(vTemplate)) then
-			if (type(vTemplate) == "table") then
+		elseif type(v) ~= type(vTemplate) then
+			if type(vTemplate) == "table" then
 				tbl[k] = CopyTable(vTemplate)
 			else
 				tbl[k] = vTemplate
 			end
 		
 		-- Synchronize sub-tables:
-		elseif (type(v) == "table") then
+		elseif type(v) == "table" then
 			Sync(v, vTemplate)
 		end
 		
@@ -269,8 +272,8 @@ local function Sync(tbl, templateTbl)
 		
 		local v = tbl[k]
 		
-		if (v == nil) then
-			if (type(vTemplate) == "table") then
+		if v == nil then
+			if type(vTemplate) == "table" then
 				tbl[k] = CopyTable(vTemplate)
 			else
 				tbl[k] = vTemplate
@@ -304,18 +307,18 @@ local function Filter(t, f)
 	assert(type(t) == "table", "First argument must be a table")
 	assert(type(f) == "function", "Second argument must be an array")
 	local newT = table.create(#t)
-	if (#t > 0) then
+	if #t > 0 then
 		local n = 0
 		for i = 1,#t do
 			local v = t[i]
-			if (f(v, i, t)) then
+			if f(v, i, t) then
 				n = (n + 1)
 				newT[n] = v
 			end
 		end
 	else
 		for k,v in pairs(t) do
-			if (f(v, k, t)) then
+			if f(v, k, t) then
 				newT[k] = v
 			end
 		end
@@ -372,13 +375,13 @@ local function Print(tbl, label, deepPrint)
 		local tbls = {}
 		local keySpaces = 0
 		for k,v in pairs(t) do
-			if (type(v) == "table") then
+			if type(v) == "table" then
 				table.insert(tbls, {k = k, v = v})
 			else
 				table.insert(nonTbls, {k = k, v = "[" .. typeof(v) .. "] " .. tostring(v)})
 			end
 			local spaces = #tostring(k) + 1
-			if (spaces > keySpaces) then
+			if spaces > keySpaces then
 				keySpaces = spaces
 			end
 		end
@@ -387,7 +390,7 @@ local function Print(tbl, label, deepPrint)
 		for _,v in ipairs(nonTbls) do
 			Insert(tostring(v.k) .. ":" .. (" "):rep(keySpaces - #tostring(v.k)) .. v.v, lvl)
 		end
-		if (deepPrint) then
+		if deepPrint then
 			for _,v in ipairs(tbls) do
 				PrintTable(v.v, lvl + 1, tostring(v.k) .. (" "):rep(keySpaces - #tostring(v.k)) .. " [Table]")
 			end
@@ -442,7 +445,7 @@ end
 
 local function FastRemoveFirstValue(t, v)
 	local index = IndexOf(t, v)
-	if (index) then
+	if index then
 		FastRemove(t, index)
 		return true, index
 	end

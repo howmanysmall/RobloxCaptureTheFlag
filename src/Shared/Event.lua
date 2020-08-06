@@ -3,22 +3,20 @@
 -- March 17, 2017
 
 --[[
-	
+
 	event = Event.new()
-	
+
 	event:Fire(...)
 	event:Wait()
 	event:Connect(functionHandler)
 	event:DisconnectAll()
 	event:Destroy()
-	
-	
+
 	Using 'Connect':
 
 		connection = event:Connect(func)
 			connection.Connected
 			connection:Disconnect()
-	
 
 	-----------------------------------------------------------------------------
 
@@ -32,9 +30,8 @@
 		In other words, BindableEvents will create a copy of whatever is passed
 		rather than the original value itself. This becomes difficult when dealing
 		with tables, where passing by reference is usually most ideal.
-	
---]]
 
+--]]
 
 
 local ASSERT  = assert
@@ -48,16 +45,16 @@ Event.__index = Event
 
 
 function Event.new()
-	
+
 	local self = setmetatable({
 		_connections = {};
 		_destroyed = false;
 		_firing = false;
 		_bindable = Instance.new("BindableEvent");
 	}, Event)
-	
+
 	return self
-	
+
 end
 
 

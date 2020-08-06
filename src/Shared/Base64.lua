@@ -28,9 +28,20 @@
 local Alphabet = {}
 local Indexes = {}
 
-for Index = 65, 90 do table.insert(Alphabet, Index) end -- A-Z
-for Index = 97, 122 do table.insert(Alphabet, Index) end -- a-z
-for Index = 48, 57 do table.insert(Alphabet, Index) end -- 0-9
+-- A-Z
+for Index = 65, 90 do
+	table.insert(Alphabet, Index)
+end
+
+-- a-z
+for Index = 97, 122 do
+	table.insert(Alphabet, Index)
+end
+
+-- 0-9
+for Index = 48, 57 do
+	table.insert(Alphabet, Index)
+end
 
 table.insert(Alphabet, 43) -- +
 table.insert(Alphabet, 47) -- /
@@ -41,7 +52,9 @@ end
 
 local Base64 = {
 	ClassName = "Base64";
-	__tostring = function(self) return self.ClassName end;
+	__tostring = function(self)
+		return self.ClassName
+	end;
 }
 
 Base64.__index = Base64
@@ -59,7 +72,7 @@ end
 	@param [string] Input The input string to encode.
 	@returns [string] The string encoded in Base64.
 **--]]
-function Base64:Encode(Input)
+function Base64.Encode(_, Input)
 	local Output = {}
 	local Length = 0
 
@@ -75,14 +88,14 @@ function Base64:Encode(Input)
 		Output[Length + 2] = Alphabet[B + 1]
 		Output[Length + 3] = C2 and Alphabet[C + 1] or 61
 		Output[Length + 4] = C3 and Alphabet[D + 1] or 61
-		Length = Length + 4
+		Length += 4
 	end
 
 	local NewOutput = {}
 	local NewLength = 0
 
 	for Index = 1, Length, 4096 do
-		NewLength = NewLength + 1
+		NewLength += 1
 		NewOutput[NewLength] = string.char(table.unpack(Output, Index, math.min(Index + 4096 - 1, Length)))
 	end
 
@@ -94,7 +107,7 @@ end
 	@param [string] Input The input string to decode.
 	@returns [string] The newly decoded string.
 **--]]
-function Base64:Decode(Input)
+function Base64.Decode(_, Input)
 	local Output = {}
 	local Length = 0
 
@@ -110,17 +123,24 @@ function Base64:Decode(Input)
 		local B = bit32_lshift(bit32_band(I2, 15), 4) + bit32_rshift(I3, 2)
 		local C = bit32_lshift(bit32_band(I3, 3), 6) + I4
 
-		Length = Length + 1
+		Length += 1
 		Output[Length] = A
-		if C3 ~= 61 then Length = Length + 1 Output[Length] = B end
-		if C4 ~= 61 then Length = Length + 1 Output[Length] = C end
+		if C3 ~= 61 then
+			Length += 1
+			Output[Length] = B
+		end
+
+		if C4 ~= 61 then
+			Length += 1
+			Output[Length] = C
+		end
 	end
 
 	local NewOutput = {}
 	local NewLength = 0
 
 	for Index = 1, Length, 4096 do
-		NewLength = NewLength + 1
+		NewLength += 1
 		NewOutput[NewLength] = string.char(table.unpack(Output, Index, math.min(Index + 4096 - 1, Length)))
 	end
 
